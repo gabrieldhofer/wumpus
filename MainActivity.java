@@ -27,12 +27,22 @@ public class MainActivity extends AppCompatActivity {
         return "nothing yet";
     }
 
+    public void refresh(int loc){
+        for(int i=0;i<16;i++) {
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.wumpus1);
+        }
+        int image = R.drawable.wumpus2;
+        ImageView img = findViewById(IMGVIEW[loc]);
+        img.setImageResource(image);
+    }
+
     public void moveUp(){
-        int loc = (actor-4+16)%16;
-        actor = loc;
+        actor = (actor-4+16)%16;
+        refresh(actor);
     }
     public void moveDown(){
-        int loc = (actor+4+16)%16;
+        actor = (actor+4+16)%16;
 
         /*****************************************************/
         // Toast
@@ -44,54 +54,15 @@ public class MainActivity extends AppCompatActivity {
         toast.show();
         /*****************************************************/
 
-
-        /*
-            New idea.
-            1. relace all tiles with empty
-            2. place actor at loc_ation
-         */
-
-        for(int i=0;i<16;i++) {
-            ImageView img = findViewById(IMGVIEW[i]);
-            img.setImageResource(R.drawable.wumpus1);
-        }
-
-        int image = R.drawable.wumpus2;
-        ImageView img = findViewById(IMGVIEW[loc]);
-        img.setImageResource(image);
-
-        // get the image
-        /*
-        String imgStrActor = "imageView" + Integer.toString(actor);
-        String imgStrNext = "imageView" + Integer.toString(loc);
-
-        int resIDActor = getResources().getIdentifier(imgStrActor, "id", "edu.sdsmt.Hofer_Gabriel");
-        int resIDNext = getResources().getIdentifier(imgStrNext, "id", "edu.sdsmt.Hofer_Gabriel");
-
-        ImageView imgActor = (ImageView) findViewById(resIDActor);
-        ImageView imgNext = (ImageView) findViewById(resIDNext);
-        ImageView temp = new ImageView(null);
-
-        // swap images using TEMP variable
-        temp.setImageDrawable(imgActor.getDrawable());
-        imgActor.setImageDrawable(imgNext.getDrawable());
-        imgNext.setImageDrawable(temp.getDrawable());
-        */
-
-
-
-
-        actor = loc;
+        refresh(actor);
     }
     public void moveLeft(){
-        int loc = (actor-1+16)%16;
-
-        actor = loc;
+        actor = (actor-1+16)%16;
+        refresh(actor);
     }
     public void moveRight(){
-        int loc = (actor+1+16)%16;
-
-        actor = loc;
+        actor = (actor+1+16)%16;
+        refresh(actor);
     }
 
     @Override
