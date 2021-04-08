@@ -19,20 +19,43 @@ public class MainActivity extends AppCompatActivity {
             R.id.imageView8, R.id.imageView9, R.id.imageView10, R.id.imageView11,
             R.id.imageView12, R.id.imageView13, R.id.imageView14, R.id.imageView15
     };
+    private int VISITED[] = new int[16];
+
+    public void init(){
+        // initialize visited array to not-visited except for (0,0)
+        for(int i=0;i<16;i++) VISITED[i]=0;
+        VISITED[0]=1;
+        place_objects_randomly();
+    }
 
     public void place_objects_randomly(){
-        actor = 0;
+        actor = 0; // actor always starts at (0,0), the other objects are random
     }
+
     public String what_is_here(int row, int col){
         return "nothing yet";
     }
 
+    public void mark_visited_squares(){
+        for(int i=0;i<16;i++) {
+            if (VISITED[i]!=0) {
+                ImageView img = findViewById(IMGVIEW[i]);
+                img.setImageResource(R.drawable.wumpus4);
+            }
+        }
+    }
+
     public void refresh(int loc){
+        // all squares to white
         for(int i=0;i<16;i++) {
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.wumpus1);
         }
-        int image = R.drawable.wumpus2;
+        // set any visited squares to green (for now)
+        mark_visited_squares();
+        VISITED[loc]=1;
+        // place actor
+        int image = R.drawable.wumpus5;
         ImageView img = findViewById(IMGVIEW[loc]);
         img.setImageResource(image);
     }
@@ -43,17 +66,6 @@ public class MainActivity extends AppCompatActivity {
     }
     public void moveDown(){
         actor = (actor+4+16)%16;
-
-        /*****************************************************/
-        // Toast
-        Context context = getApplicationContext();
-        CharSequence text = "MoveDown";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-        /*****************************************************/
-
         refresh(actor);
     }
     public void moveLeft(){
@@ -70,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        init();
 
         Button btnMoveUp = (Button) findViewById(R.id.moveUp);
         btnMoveUp.setOnClickListener(new View.OnClickListener(){
