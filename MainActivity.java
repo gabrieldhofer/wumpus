@@ -1,37 +1,86 @@
+/*
+Mark off what items are complete, and put a P if partially complete. If 'P' include how to test what is working for partial credit below the checklist line.
+
+        You must “reasonably” complete the lower tiers before gaining points for the later tiers. By “reasonably,” I can reasonably assume you honestly thought it was complete.
+
+        2a and 2b are the same tier. They are noted only for category clarity.
+
+        __ Tierless: rotation (-4pt each item missed) *	12
+
+        1) Layout *	12
+        _x_ Game area exists
+        _x_ Move buttons
+        _x_ Title with your name, cheat, reset, notification, bow, score there
+
+
+        2a: Game Area *	16
+        _x_ Player there
+        _x_ 4x4 grid of evenly sized
+        _x_ Exit room clearly recolored when reached
+        _x_ Player is a black dot (Stickman)
+
+
+        2b: Game logic 	30
+        _x_ Correct starting state
+        _x_ Random placement of items
+        _x_ Movement
+        _x_ Game over note with pit and wumpus
+        _x_ Cheat and reset works
+        __ Pickup events
+
+        * These have additional restrictions to gain full points 
+
+        The grade you compute is the starting point for course staff, who reserve the right to change the grade if they disagree with your assessment and to deduct points for other issues they may encounter, such as errors in the submission process, naming issues, etc.
+
+*/
 package edu.sdsmt.Hofer_Gabriel;
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int actor = 0, score = 0;
-    private ArrayList<String> GRID = new ArrayList<String>();
-    private int IMGVIEW[] = {
+    private int actor = 0, score = 0, bow_and_quiver=0, arrows=0;
+    private ArrayList<String> GRID;
+    private final int[] IMGVIEW = {
             R.id.imageView0, R.id.imageView1, R.id.imageView2, R.id.imageView3,
             R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7,
             R.id.imageView8, R.id.imageView9, R.id.imageView10, R.id.imageView11,
             R.id.imageView12, R.id.imageView13, R.id.imageView14, R.id.imageView15
     };
-    private int VISITED[] = new int[16];
+    private int[] VISITED = new int[16];
 
-    public void init(){
+    public MainActivity() {
+        GRID = new ArrayList<>();
+    }
+
+    private void init(){
         // initialize visited array to not-visited except for (0,0)
         for(int i=0;i<16;i++) VISITED[i]=0;
         VISITED[0]=1;
         place_objects_randomly();
+        score=bow_and_quiver=arrows=0;
+        ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
+        ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+        ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+        ((TextView) findViewById(R.id.notifications)).setText("Notifications: ");
+        ((TextView) findViewById(R.id.score)).setText("Score: "+ score);
+        for(int i=1;i<16;i++) {
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.wumpus1);
+        }
+        ImageView img = findViewById(IMGVIEW[0]);
+        img.setImageResource(R.drawable.wumpus2);
     }
 
-    public void place_objects_randomly(){
+    private void place_objects_randomly(){
         actor = 0; // actor always starts at (0,0), the other objects are random
         GRID.clear();
         GRID.add("exit");
@@ -47,18 +96,35 @@ public class MainActivity extends AppCompatActivity {
         GRID.add(0,"actor");
     }
 
-    public void cheat(){
-        for(int i=0;i<16;i++){
-            // make pictures and set appropriate imageView with showimage
-            // if is_wumpus...
-            // if is_bat...
-            // if is_bow_and_quiver...
-            // if is_arrow1...
-            // if is_arrow2...
+    private void cheat(){
+        ImageView img;
+        for(int i=0;i<16;i++) {
+            if(GRID.get(i).equals("exit")){
+                img = findViewById(IMGVIEW[i]);
+                img.setImageResource(R.drawable.exit);
+            } else if(GRID.get(i).equals("pit")){
+                img = findViewById(IMGVIEW[i]);
+                img.setImageResource(R.drawable.pit);
+            } else if(GRID.get(i).equals("bat")){
+                img = findViewById(IMGVIEW[i]);
+                img.setImageResource(R.drawable.bat);
+            } else if(GRID.get(i).equals("bow_and_quiver")){
+                img = findViewById(IMGVIEW[i]);
+                img.setImageResource(R.drawable.bow_quiver);
+            } else if(GRID.get(i).equals("arrow1")){
+                img = findViewById(IMGVIEW[i]);
+                img.setImageResource(R.drawable.arrow);
+            } else if(GRID.get(i).equals("arrow2")){
+                img = findViewById(IMGVIEW[i]);
+                img.setImageResource(R.drawable.arrow);
+            } else if(GRID.get(i).equals("wumpus")){
+                img = findViewById(IMGVIEW[i]);
+                img.setImageResource(R.drawable.wumpus);
+            }
         }
     }
 
-    public void mark_visited_squares(){
+    private void mark_visited_squares(){
         for(int i=0;i<16;i++) {
             if (VISITED[i]!=0) {
                 ImageView img = findViewById(IMGVIEW[i]);
@@ -67,42 +133,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean check_for_obstacles_and_stuff(int i){
-        if(GRID.get(i)=="exit"){
+    private boolean check_for_obstacles_and_stuff(int i){
+        if(GRID.get(i).equals("exit")){
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.exit);
             return true;
-        } else if(GRID.get(i)=="pit"){
+        } else if(GRID.get(i).equals("pit")){
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.pit);
+            // NOTIFY GAME OVER
+            ((TextView) findViewById(R.id.notifications)).setText("Notifications: Game Over");
             return true;
-        } else if(GRID.get(i)=="bat"){
+        } else if(GRID.get(i).equals("bat")){
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.bat);
             return true;
-        } else if(GRID.get(i)=="bow_and_quiver"){
+        } else if(GRID.get(i).equals("bow_and_quiver")){
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.bow_quiver);
+            bow_and_quiver+=1;
+            ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
             return true;
-        } else if(GRID.get(i)=="arrow1"){
+        } else if(GRID.get(i).equals("arrow1")){
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.arrow);
+            arrows+=1;
+            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
             return true;
-        } else if(GRID.get(i)=="arrow2"){
+        } else if(GRID.get(i).equals("arrow2")){
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.arrow);
+            arrows+=1;
+            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
             return true;
-        } else if(GRID.get(i)=="wumpus"){
+        } else if(GRID.get(i).equals("wumpus")){
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.wumpus);
+            // NOTIFY GAME OVER
+            ((TextView) findViewById(R.id.notifications)).setText("Notifications: Game Over");
+
             return true;
-        } else {
-            // idk
         }
         return false;
     }
 
-    public void refresh(int loc){
+    private void refresh(int loc){
+        // update score
+        score+=1;
+        ((TextView) findViewById(R.id.score)).setText("Score: "+ score);
+
         // all squares to white
         for(int i=0;i<16;i++) {
             ImageView img = findViewById(IMGVIEW[i]);
@@ -119,25 +198,21 @@ public class MainActivity extends AppCompatActivity {
         int image = R.drawable.wumpus5;
         ImageView img = findViewById(IMGVIEW[loc]);
         img.setImageResource(image);
-
-        // update score
-        score+=1;
-        ((TextView) findViewById(R.id.score)).setText("Score: "+Integer.toString(score));
     }
 
-    public void moveUp(){
+    private void moveUp(){
         actor = (actor-4+16)%16;
         refresh(actor);
     }
-    public void moveDown(){
+    private void moveDown(){
         actor = (actor+4+16)%16;
         refresh(actor);
     }
-    public void moveLeft(){
+    private void moveLeft(){
         actor = (actor-1) + ((actor-1)/4 != actor/4 ? 4 : 0);
         refresh(actor);
     }
-    public void moveRight(){
+    private void moveRight(){
         actor = (actor+1) + ((actor+1)/4 != actor/4 ? -4 : 0);
         refresh(actor);
     }
@@ -149,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
 
         init();
 
-        Button btnMoveUp = (Button) findViewById(R.id.moveUp);
+        Button btnMoveUp = findViewById(R.id.moveUp);
         btnMoveUp.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -157,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnMoveDown = (Button) findViewById(R.id.moveDown);
+        Button btnMoveDown = findViewById(R.id.moveDown);
         btnMoveDown.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -165,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnMoveLeft = (Button) findViewById(R.id.moveLeft);
+        Button btnMoveLeft = findViewById(R.id.moveLeft);
         btnMoveLeft.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -173,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnMoveRight = (Button) findViewById(R.id.moveRight);
+        Button btnMoveRight = findViewById(R.id.moveRight);
         btnMoveRight.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -181,21 +256,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button btnCheat = findViewById(R.id.cheat);
+        btnCheat.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                cheat();
+            }
+        });
+
+        Button btnReset = findViewById(R.id.reset);
+        btnReset.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                init();
+            }
+        });
     }
 }
 
-/*********************************************************************/
-/*                             TODO
-    0. Title with
-        - Name
-        - cheat
-        - reset
-        - notification
-        - bow
-        - score
-    1. check for obstacles after moving to new square
-    2. make cheat button work
-    3. make reset button work (call ramdomize)
-    4.  - - -
-*/
 
