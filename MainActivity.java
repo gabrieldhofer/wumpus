@@ -1,13 +1,12 @@
 package edu.sdsmt.Hofer_Gabriel;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int actor = 0;
+    private int actor = 0, score = 0;
     private ArrayList<String> grid = new ArrayList<String>();
     private int IMGVIEW[] = {
             R.id.imageView0, R.id.imageView1, R.id.imageView2, R.id.imageView3,
@@ -45,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<8;i++)
             grid.add("--");
         Collections.shuffle(grid);
+        grid.add(0,"actor");
     }
 
-    
     public void cheat(){
         for(int i=0;i<16;i++){
             // make pictures and set appropriate imageView with showimage
@@ -81,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
         int image = R.drawable.wumpus5;
         ImageView img = findViewById(IMGVIEW[loc]);
         img.setImageResource(image);
+        // update score
+        score+=1;
+        ((TextView) findViewById(R.id.score)).setText("Score: "+Integer.toString(score));
     }
 
     public void moveUp(){
@@ -141,3 +143,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 }
+
+/*********************************************************************/
+/*                             TODO
+    0. Title with
+        - Name
+        - cheat
+        - reset
+        - notification
+        - bow
+        - score
+    1. check for obstacles after moving to new square
+    2. make cheat button work
+    3. make reset button work (call ramdomize)
+    4.  - - -
+*/
+
+
+
+
+
+
+
+
+
