@@ -15,7 +15,7 @@ import java.util.Collections;
 public class MainActivity extends AppCompatActivity {
 
     private int actor = 0, score = 0;
-    private ArrayList<String> grid = new ArrayList<String>();
+    private ArrayList<String> GRID = new ArrayList<String>();
     private int IMGVIEW[] = {
             R.id.imageView0, R.id.imageView1, R.id.imageView2, R.id.imageView3,
             R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7,
@@ -33,18 +33,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void place_objects_randomly(){
         actor = 0; // actor always starts at (0,0), the other objects are random
-        grid.clear();
-        grid.add("exit");
-        grid.add("pit");
-        grid.add("bat");
-        grid.add("bow_and_quiver");
-        grid.add("arrow1");
-        grid.add("arrow2");
-        grid.add("wumpus");
+        GRID.clear();
+        GRID.add("exit");
+        GRID.add("pit");
+        GRID.add("bat");
+        GRID.add("bow_and_quiver");
+        GRID.add("arrow1");
+        GRID.add("arrow2");
+        GRID.add("wumpus");
         for(int i=0;i<8;i++)
-            grid.add("--");
-        Collections.shuffle(grid);
-        grid.add(0,"actor");
+            GRID.add("--");
+        Collections.shuffle(GRID);
+        GRID.add(0,"actor");
     }
 
     public void cheat(){
@@ -67,6 +67,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public boolean check_for_obstacles_and_stuff(int i){
+        if(GRID.get(i)=="exit"){
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.exit);
+            return true;
+        } else if(GRID.get(i)=="pit"){
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.pit);
+            return true;
+        } else if(GRID.get(i)=="bat"){
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.bat);
+            return true;
+        } else if(GRID.get(i)=="bow_and_quiver"){
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.bow_quiver);
+            return true;
+        } else if(GRID.get(i)=="arrow1"){
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.arrow);
+            return true;
+        } else if(GRID.get(i)=="arrow2"){
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.arrow);
+            return true;
+        } else if(GRID.get(i)=="wumpus"){
+            ImageView img = findViewById(IMGVIEW[i]);
+            img.setImageResource(R.drawable.wumpus);
+            return true;
+        } else {
+            // idk
+        }
+        return false;
+    }
+
     public void refresh(int loc){
         // all squares to white
         for(int i=0;i<16;i++) {
@@ -76,10 +111,15 @@ public class MainActivity extends AppCompatActivity {
         // set any visited squares to green (for now)
         mark_visited_squares();
         VISITED[loc]=1;
+
+        // check for obstacles and stuff
+        if(check_for_obstacles_and_stuff(loc)) return;
+
         // place actor
         int image = R.drawable.wumpus5;
         ImageView img = findViewById(IMGVIEW[loc]);
         img.setImageResource(image);
+
         // update score
         score+=1;
         ((TextView) findViewById(R.id.score)).setText("Score: "+Integer.toString(score));
@@ -158,12 +198,4 @@ public class MainActivity extends AppCompatActivity {
     3. make reset button work (call ramdomize)
     4.  - - -
 */
-
-
-
-
-
-
-
-
 
