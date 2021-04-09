@@ -48,7 +48,7 @@ import java.util.Collections;
 public class MainActivity extends AppCompatActivity {
 
     private int actor = 0, score = 0, bow_and_quiver=0, arrows=0;
-    private ArrayList<String> GRID;
+    private ArrayList<String> GRID, CHEAT;
     private final int[] IMGVIEW = {
             R.id.imageView0, R.id.imageView1, R.id.imageView2, R.id.imageView3,
             R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7,
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     public MainActivity() {
         GRID = new ArrayList<>();
+        CHEAT = new ArrayList<>();
     }
 
     private void init(){
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             img.setImageResource(R.drawable.wumpus1);
         }
         ImageView img = findViewById(IMGVIEW[0]);
-        img.setImageResource(R.drawable.wumpus2);
+        img.setImageResource(R.drawable.wumpus5);
     }
 
     private void place_objects_randomly(){
@@ -94,30 +95,31 @@ public class MainActivity extends AppCompatActivity {
             GRID.add("--");
         Collections.shuffle(GRID);
         GRID.add(0,"actor");
+        CHEAT = GRID;
     }
 
     private void cheat(){
         ImageView img;
         for(int i=0;i<16;i++) {
-            if(GRID.get(i).equals("exit")){
+            if(CHEAT.get(i).equals("exit")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.exit);
-            } else if(GRID.get(i).equals("pit")){
+            } else if(CHEAT.get(i).equals("pit")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.pit);
-            } else if(GRID.get(i).equals("bat")){
+            } else if(CHEAT.get(i).equals("bat")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.bat);
-            } else if(GRID.get(i).equals("bow_and_quiver")){
+            } else if(CHEAT.get(i).equals("bow_and_quiver")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.bow_quiver);
-            } else if(GRID.get(i).equals("arrow1")){
+            } else if(CHEAT.get(i).equals("arrow1")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.arrow);
-            } else if(GRID.get(i).equals("arrow2")){
+            } else if(CHEAT.get(i).equals("arrow2")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.arrow);
-            } else if(GRID.get(i).equals("wumpus")){
+            } else if(CHEAT.get(i).equals("wumpus")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.wumpus);
             }
@@ -134,40 +136,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean check_for_obstacles_and_stuff(int i){
+        ImageView img;
         if(GRID.get(i).equals("exit")){
-            ImageView img = findViewById(IMGVIEW[i]);
+            img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.exit);
+            // NOTIFY GAME OVER
+            ((TextView) findViewById(R.id.notifications)).setText("Notifications: Winner Winner Chicken Dinner");
             return true;
         } else if(GRID.get(i).equals("pit")){
-            ImageView img = findViewById(IMGVIEW[i]);
+            img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.pit);
             // NOTIFY GAME OVER
             ((TextView) findViewById(R.id.notifications)).setText("Notifications: Game Over");
             return true;
         } else if(GRID.get(i).equals("bat")){
-            ImageView img = findViewById(IMGVIEW[i]);
+            img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.bat);
             return true;
         } else if(GRID.get(i).equals("bow_and_quiver")){
-            ImageView img = findViewById(IMGVIEW[i]);
+            img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.bow_quiver);
-            bow_and_quiver+=1;
-            ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
+            //bow_and_quiver+=1;
+            //((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
             return true;
         } else if(GRID.get(i).equals("arrow1")){
-            ImageView img = findViewById(IMGVIEW[i]);
+            img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.arrow);
-            arrows+=1;
-            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+            //arrows+=1;
+            //((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
             return true;
         } else if(GRID.get(i).equals("arrow2")){
-            ImageView img = findViewById(IMGVIEW[i]);
+            img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.arrow);
-            arrows+=1;
-            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+            //arrows+=1;
+            //((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
             return true;
         } else if(GRID.get(i).equals("wumpus")){
-            ImageView img = findViewById(IMGVIEW[i]);
+            img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.wumpus);
             // NOTIFY GAME OVER
             ((TextView) findViewById(R.id.notifications)).setText("Notifications: Game Over");
@@ -177,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private void refresh(int loc){
+    private void refresh(){
         // update score
         score+=1;
         ((TextView) findViewById(R.id.score)).setText("Score: "+ score);
@@ -187,34 +192,58 @@ public class MainActivity extends AppCompatActivity {
             ImageView img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.wumpus1);
         }
+
         // set any visited squares to green (for now)
         mark_visited_squares();
-        VISITED[loc]=1;
+        VISITED[actor]=1;
 
         // check for obstacles and stuff
-        if(check_for_obstacles_and_stuff(loc)) return;
+        if(check_for_obstacles_and_stuff(actor)) return;
 
         // place actor
         int image = R.drawable.wumpus5;
-        ImageView img = findViewById(IMGVIEW[loc]);
+        ImageView img = findViewById(IMGVIEW[actor]);
         img.setImageResource(image);
     }
 
     private void moveUp(){
         actor = (actor-4+16)%16;
-        refresh(actor);
+        refresh();
     }
     private void moveDown(){
         actor = (actor+4+16)%16;
-        refresh(actor);
+        refresh();
     }
     private void moveLeft(){
-        actor = (actor-1) + ((actor-1)/4 != actor/4 ? 4 : 0);
-        refresh(actor);
+        actor = ((actor-1) + ((actor-1)/4 != actor/4 ? 4 : 0) + 16) % 16;
+        refresh();
     }
     private void moveRight(){
-        actor = (actor+1) + ((actor+1)/4 != actor/4 ? -4 : 0);
-        refresh(actor);
+        actor = ((actor+1) + ((actor+1)/4 != actor/4 ? -4 : 0) + 16) % 16;
+        refresh();
+    }
+
+    private void pickup(){
+        if(GRID.get(actor).equals("arrow1") ||
+                GRID.get(actor).equals("arrow2") ||
+                GRID.get(actor).equals("bow_and_quiver")){
+            ImageView img = findViewById(IMGVIEW[actor]);
+            img.setImageResource(R.drawable.wumpus4);
+        }
+        switch(GRID.get(actor)){
+            case "arrow1":
+                arrows+=1;
+                ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+                break;
+            case "arrow2":
+                arrows+=1;
+                ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+                break;
+            case "bow_and_quiver":
+                bow_and_quiver+=1;
+                ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
+                break;
+        }
     }
 
     @Override
@@ -269,6 +298,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 init();
+            }
+        });
+
+        Button pickup = findViewById(R.id.pickup);
+        pickup.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                pickup();
             }
         });
     }
