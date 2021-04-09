@@ -10,9 +10,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class MainActivity extends AppCompatActivity {
 
-    private int actor = 0, pit, bat, bow_and_quiver, arrow1, arrow2, wumpus;
+    private int actor = 0;
+    private ArrayList<String> grid = new ArrayList<String>();
     private int IMGVIEW[] = {
             R.id.imageView0, R.id.imageView1, R.id.imageView2, R.id.imageView3,
             R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7,
@@ -30,10 +34,29 @@ public class MainActivity extends AppCompatActivity {
 
     public void place_objects_randomly(){
         actor = 0; // actor always starts at (0,0), the other objects are random
+        grid.clear();
+        grid.add("exit");
+        grid.add("pit");
+        grid.add("bat");
+        grid.add("bow_and_quiver");
+        grid.add("arrow1");
+        grid.add("arrow2");
+        grid.add("wumpus");
+        for(int i=0;i<8;i++)
+            grid.add("--");
+        Collections.shuffle(grid);
     }
 
-    public String what_is_here(int row, int col){
-        return "nothing yet";
+    
+    public void cheat(){
+        for(int i=0;i<16;i++){
+            // make pictures and set appropriate imageView with showimage
+            // if is_wumpus...
+            // if is_bat...
+            // if is_bow_and_quiver...
+            // if is_arrow1...
+            // if is_arrow2...
+        }
     }
 
     public void mark_visited_squares(){
@@ -69,11 +92,11 @@ public class MainActivity extends AppCompatActivity {
         refresh(actor);
     }
     public void moveLeft(){
-        actor = (actor-1+16)%16;
+        actor = (actor-1) + ((actor-1)/4 != actor/4 ? 4 : 0);
         refresh(actor);
     }
     public void moveRight(){
-        actor = (actor+1+16)%16;
+        actor = (actor+1) + ((actor+1)/4 != actor/4 ? -4 : 0);
         refresh(actor);
     }
 
