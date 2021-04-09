@@ -26,7 +26,7 @@ Mark off what items are complete, and put a P if partially complete. If 'P' incl
         _x_ Movement
         _x_ Game over note with pit and wumpus
         _x_ Cheat and reset works
-        __ Pickup events
+        _x_ Pickup events
 
         * These have additional restrictions to gain full points 
 
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<8;i++)
             GRID.add("--");
         Collections.shuffle(GRID);
-        GRID.add(0,"actor");
+        GRID.add(0,"--");
         CHEAT = GRID;
     }
 
@@ -127,10 +127,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mark_visited_squares(){
+        ImageView img;
         for(int i=0;i<16;i++) {
             if (VISITED[i]!=0) {
-                ImageView img = findViewById(IMGVIEW[i]);
-                img.setImageResource(R.drawable.wumpus4);
+                switch(GRID.get(i)){
+                    case "--":
+                        img = findViewById(IMGVIEW[i]);
+                        img.setImageResource(R.drawable.wumpus4);
+                        break;
+                    case "pit":
+                        img = findViewById(IMGVIEW[i]);
+                        img.setImageResource(R.drawable.pit);
+                        break;
+                    case "bat":
+                        img = findViewById(IMGVIEW[i]);
+                        img.setImageResource(R.drawable.bat);
+                        break;
+                    case "arrow1":
+                        img = findViewById(IMGVIEW[i]);
+                        img.setImageResource(R.drawable.arrow);
+                        break;
+                    case "arrow2":
+                        img = findViewById(IMGVIEW[i]);
+                        img.setImageResource(R.drawable.arrow);
+                        break;
+                    case "wumpus":
+                        img = findViewById(IMGVIEW[i]);
+                        img.setImageResource(R.drawable.wumpus);
+                        break;
+                    case "exit":
+                        img = findViewById(IMGVIEW[i]);
+                        img.setImageResource(R.drawable.exit);
+                        break;
+                }
+                //ImageView img = findViewById(IMGVIEW[i]);
+                //img.setImageResource(R.drawable.wumpus4);
             }
         }
     }
@@ -195,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
         // set any visited squares to green (for now)
         mark_visited_squares();
+        VISITED[0]=1;
         VISITED[actor]=1;
 
         // check for obstacles and stuff
@@ -215,21 +247,15 @@ public class MainActivity extends AppCompatActivity {
         refresh();
     }
     private void moveLeft(){
-        actor = ((actor-1) + ((actor-1)/4 != actor/4 ? 4 : 0) + 16) % 16;
+        actor = (actor-1) + ((actor-1+4)/4 != (actor+4)/4 ? 4 : 0);
         refresh();
     }
     private void moveRight(){
-        actor = ((actor+1) + ((actor+1)/4 != actor/4 ? -4 : 0) + 16) % 16;
+        actor = (actor+1) + ((actor+1+4)/4 != (actor+4)/4 ? -4 : 0);
         refresh();
     }
 
     private void pickup(){
-        if(GRID.get(actor).equals("arrow1") ||
-                GRID.get(actor).equals("arrow2") ||
-                GRID.get(actor).equals("bow_and_quiver")){
-            ImageView img = findViewById(IMGVIEW[actor]);
-            img.setImageResource(R.drawable.wumpus4);
-        }
         switch(GRID.get(actor)){
             case "arrow1":
                 arrows+=1;
