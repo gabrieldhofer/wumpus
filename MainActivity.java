@@ -1,36 +1,4 @@
 /*
-Mark off what items are complete, and put a P if partially complete. If 'P' include how to test what is working for partial credit below the checklist line.
-
-        You must “reasonably” complete the lower tiers before gaining points for the later tiers. By “reasonably,” I can reasonably assume you honestly thought it was complete.
-
-        2a and 2b are the same tier. They are noted only for category clarity.
-
-        __ Tierless: rotation (-4pt each item missed) *	12
-
-        1) Layout *	12
-        _x_ Game area exists
-        _x_ Move buttons
-        _x_ Title with your name, cheat, reset, notification, bow, score there
-
-
-        2a: Game Area *	16
-        _x_ Player there
-        _x_ 4x4 grid of evenly sized
-        _x_ Exit room clearly recolored when reached
-        _x_ Player is a black dot (Stickman)
-
-
-        2b: Game logic 	30
-        _x_ Correct starting state
-        _x_ Random placement of items
-        _x_ Movement
-        _x_ Game over note with pit and wumpus
-        _x_ Cheat and reset works
-        _x_ Pickup events
-
-        * These have additional restrictions to gain full points 
-
-        The grade you compute is the starting point for course staff, who reserve the right to change the grade if they disagree with your assessment and to deduct points for other issues they may encounter, such as errors in the submission process, naming issues, etc.
 
 */
 package edu.sdsmt.Hofer_Gabriel;
@@ -47,8 +15,10 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
+    private StateMachine stateMachine = new StateMachine();
     private int actor = 0, score = 0, bow_and_quiver=0, arrows=0;
-    private ArrayList<String> GRID, CHEAT;
+    private ArrayList<String> GRID = new ArrayList<>();
+    private ArrayList<String> CHEAT = new ArrayList<>();
     private final int[] IMGVIEW = {
             R.id.imageView0, R.id.imageView1, R.id.imageView2, R.id.imageView3,
             R.id.imageView4, R.id.imageView5, R.id.imageView6, R.id.imageView7,
@@ -56,11 +26,6 @@ public class MainActivity extends AppCompatActivity {
             R.id.imageView12, R.id.imageView13, R.id.imageView14, R.id.imageView15
     };
     private int[] VISITED = new int[16];
-
-    public MainActivity() {
-        GRID = new ArrayList<>();
-        CHEAT = new ArrayList<>();
-    }
 
     private void init(){
         // initialize visited array to not-visited except for (0,0)
@@ -79,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         }
         ImageView img = findViewById(IMGVIEW[0]);
         img.setImageResource(R.drawable.wumpus5);
+
+        // reset statemachine
+        stateMachine = new StateMachine();
     }
 
     private void place_objects_randomly(){
@@ -187,27 +155,20 @@ public class MainActivity extends AppCompatActivity {
         } else if(GRID.get(i).equals("bow_and_quiver")){
             img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.bow_quiver);
-            //bow_and_quiver+=1;
-            //((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
             return true;
         } else if(GRID.get(i).equals("arrow1")){
             img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.arrow);
-            //arrows+=1;
-            //((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
             return true;
         } else if(GRID.get(i).equals("arrow2")){
             img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.arrow);
-            //arrows+=1;
-            //((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
             return true;
         } else if(GRID.get(i).equals("wumpus")){
             img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.wumpus);
             // NOTIFY GAME OVER
             ((TextView) findViewById(R.id.notifications)).setText("Notifications: Game Over");
-
             return true;
         }
         return false;
@@ -272,6 +233,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void enable(){
+
+    }
+    private void disable(){
+
+    }
+    private void upArrow(){
+
+    }
+    private void leftArrow(){
+
+    }
+    private void downArrow(){
+
+    }
+    private void rightArrow(){
+
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -334,7 +315,55 @@ public class MainActivity extends AppCompatActivity {
                 pickup();
             }
         });
+
+        Button enable = findViewById(R.id.enable);
+        enable.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                enable();
+            }
+        });
+
+        Button disable = findViewById(R.id.disable);
+        disable.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                disable();
+            }
+        });
+
+        /************************************************************************/
+        /*                          Arrow Button Events                         */
+        /************************************************************************/
+        Button upArrow = findViewById(R.id.upArrow);
+        upArrow.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                upArrow();
+            }
+        });
+        Button leftArrow = findViewById(R.id.leftArrow);
+        leftArrow.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                leftArrow();
+            }
+        });
+        Button downArrow = findViewById(R.id.downArrow);
+        downArrow.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                downArrow();
+            }
+        });
+        Button rightArrow = findViewById(R.id.rightArrow);
+        rightArrow.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                rightArrow();
+            }
+        });
+
     }
 }
-
 
