@@ -1,20 +1,86 @@
+/*
+https://www.geeksforgeeks.org/how-to-create-landscape-layout-in-android-studio/
+https://stackoverflow.com/questions/29458189/android-studio-layout-land-folder-not-appearing
+https://stackoverflow.com/questions/52547657/the-layout-layout-in-layout-has-no-declaration-in-the-base-layout-folder-erro
+
+
+Mark off what items are complete, and put a P if partially complete. If 'P' include how to test what is working for partial credit below the checklist line.
+
+You must “reasonably” complete the lower tiers before gaining points for the later tiers. By “reasonably,” I can reasonably assume you honestly thought it was complete.
+
+1a and 1b are the same tier. They are noted only for category clarity.
+
+Tierless: State machine*	24
+_x_ State machine framework is present
+_P_ Framework controls bow, arrows, pickup
+_P_ Framework controls exit or not
+_P_ End conditions
+
+
+_X_ Tierless: rotation (-4 each item missed) *	8
+
+
+1a: Layout *	24
+_x_ Arrow buttons
+_P_ Player select exit and opens
+        (I'm not sure what this means..)
+_x_ Majority of area the game area
+_x_ Aspect kept, and resize to new devices works
+_x_ Different layout for portrait and landscape
+        (created layout-land.xml file in the res/layout-land/ directory)
+
+1b: Game logic	30
+_x_ Bat event (loss of bow, arrows, and new position)
+_x_ Rooms start hidden, and then revealed
+_x_ Shooting the arrow components (Wumpus and loss)
+_P_ Player select works *
+    (didn't get the extended floating point action button to work. However,
+    I still created a couple of floating point action buttons for changing
+    the player icon.)
+
+2 Tier: End game	14
+__ End dialog exists
+__ Both end dialogs open at right time
+__ End activity score/loss reason correct (50% each)
+
+
+3: extensions 	30
+   Extension 1: 10pts images: objects on the grid are images (wumpus, arrow, bat, etc.)
+Etc.
+
+* These have additional restrictions to gain full points 
+
+The grade you compute is the starting point for course staff, who reserve the right to change the grade if they disagree with your assessment and to deduct points for other issues they may encounter, such as errors in the submission process, naming issues, etc.
+
+
+*/
 package edu.sdsmt.Hofer_Gabriel;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    Button closeButton;
+    AlertDialog.Builder builder;
+
+
     private StateMachine stateMachine = new StateMachine();
-    private int actor = 0, score = 0, bow_and_quiver=0, arrows=0;
+    private int[] ARROW = new int[16];
+    private int actor = 0, score = 0;
     private ArrayList<String> GRID = new ArrayList<>();
     private ArrayList<String> CHEAT = new ArrayList<>();
     private final int[] IMGVIEW = {
@@ -24,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
             R.id.imageView12, R.id.imageView13, R.id.imageView14, R.id.imageView15
     };
     private int[] VISITED = new int[16];
-    private int[] ARROW = new int[16];
     private String player = "wumpus5";
 
     private void init(){
@@ -36,10 +101,11 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<16;i++) ARROW[i]=0;
 
         place_objects_randomly();
-        score=bow_and_quiver=arrows=0;
-        ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
-        ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
-        ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+        score=0;
+        stateMachine.lose_bow_and_quiver_arrows();
+        ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ stateMachine.get_bow_and_quiver());
+        ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ stateMachine.get_arrows());
+        ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ stateMachine.get_arrows());
         ((TextView) findViewById(R.id.notifications)).setText("Notifications: ");
         ((TextView) findViewById(R.id.score)).setText("Score: "+ score);
         for(int i=1;i<16;i++) {
@@ -59,8 +125,6 @@ public class MainActivity extends AppCompatActivity {
                 img.setImageResource(R.drawable.square);
                 break;
         }
-        //img.setImageResource(getResources().getIdentifier(player, "drawable", getPackageName()));
-
         // reset statemachine
         stateMachine = new StateMachine();
     }
@@ -85,25 +149,25 @@ public class MainActivity extends AppCompatActivity {
     private void cheat(){
         ImageView img;
         for(int i=0;i<16;i++) {
-            if(CHEAT.get(i).equals("exit")){
+            if(GRID.get(i).equals("exit")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.exit);
-            } else if(CHEAT.get(i).equals("pit")){
+            } else if(GRID.get(i).equals("pit")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.pit);
-            } else if(CHEAT.get(i).equals("bat")){
+            } else if(GRID.get(i).equals("bat")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.bat);
-            } else if(CHEAT.get(i).equals("bow_and_quiver")){
+            } else if(GRID.get(i).equals("bow_and_quiver")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.bow_quiver);
-            } else if(CHEAT.get(i).equals("arrow1")){
+            } else if(GRID.get(i).equals("arrow1")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.arrow);
-            } else if(CHEAT.get(i).equals("arrow2")){
+            } else if(GRID.get(i).equals("arrow2")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.arrow);
-            } else if(CHEAT.get(i).equals("wumpus")){
+            } else if(GRID.get(i).equals("wumpus")){
                 img = findViewById(IMGVIEW[i]);
                 img.setImageResource(R.drawable.wumpus);
             }
@@ -154,6 +218,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void goto_random_place(){
+        Random rdm = new Random();
+        actor = rdm.nextInt(101) % 16;
+        stateMachine.lose_bow_and_quiver_arrows();
+        refresh();
+    }
+
+    private void gameover(){
+        Context context = getApplicationContext();
+        CharSequence text = "Dialog: Game Over";
+        int duration = Toast.LENGTH_LONG;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
+
     private boolean check_for_obstacles_and_stuff(int i){
         ImageView img;
         if(GRID.get(i).equals("exit")){
@@ -167,10 +248,12 @@ public class MainActivity extends AppCompatActivity {
             img.setImageResource(R.drawable.pit);
             // NOTIFY GAME OVER
             ((TextView) findViewById(R.id.notifications)).setText("Notifications: Game Over");
+            gameover();
             return true;
         } else if(GRID.get(i).equals("bat")){
             img = findViewById(IMGVIEW[i]);
             img.setImageResource(R.drawable.bat);
+            goto_random_place();
             return true;
         } else if(GRID.get(i).equals("bow_and_quiver")){
             img = findViewById(IMGVIEW[i]);
@@ -189,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             img.setImageResource(R.drawable.wumpus);
             // NOTIFY GAME OVER
             ((TextView) findViewById(R.id.notifications)).setText("Notifications: Game Over");
+            gameover();
             return true;
         }
         return false;
@@ -213,12 +297,7 @@ public class MainActivity extends AppCompatActivity {
         // pickup bow_andd_quiver or arrow if possible
         pickup();
 
-        // check for obstacles and stuff
-        if(check_for_obstacles_and_stuff(actor)) return;
-
-        // place actor
-        //int image = getResources().getIdentifier(player, "drawable", getPackageName());
-
+        // get the right player
         int image = R.drawable.wumpus5;
         switch(player){
             case "wumpus5":
@@ -232,6 +311,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
+        // display obstacles/objects instead of player
+        if(check_for_obstacles_and_stuff(actor)) return;
         ImageView img = findViewById(IMGVIEW[actor]);
         img.setImageResource(image);
     }
@@ -256,48 +337,47 @@ public class MainActivity extends AppCompatActivity {
     private void pickup() {
         switch(GRID.get(actor)) {
             case "arrow1":
-                if (bow_and_quiver > 0 && ARROW[actor]!=0 ) // can only pickup arrow if has bow and quiver
-                    arrows += 1;
+                if (stateMachine.get_bow_and_quiver() > 0 && ARROW[actor]==0) // can only pickup arrow if has bow and quiver
+                    stateMachine.found_arrow();
                 ARROW[actor]=1;
-                ((TextView) findViewById(R.id.arrows)).setText("Arrows: " + arrows);
+                ((TextView) findViewById(R.id.arrows)).setText("Arrows: " + stateMachine.get_arrows());
                 break;
             case "arrow2":
-                if (bow_and_quiver > 0 && ARROW[actor]!=0 )  // can only pickup arrow if has bow and quiver
-                    arrows += 1;
+                if (stateMachine.get_bow_and_quiver() > 0 && ARROW[actor]==0)  // can only pickup arrow if has bow and quiver
+                    stateMachine.found_arrow();
                 ARROW[actor]=1;
-                ((TextView) findViewById(R.id.arrows)).setText("Arrows: " + arrows);
+                ((TextView) findViewById(R.id.arrows)).setText("Arrows: " + stateMachine.get_arrows());
                 break;
             case "bow_and_quiver":
-                if(bow_and_quiver<1)
-                    bow_and_quiver += 1;
-                ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: " + bow_and_quiver);
+                stateMachine.found_bow();
+                ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: " + stateMachine.get_bow_and_quiver());
                 break;
         }
     }
-
 
     /************************************************************************/
     /*                          Arrow Functions                             */
     /************************************************************************/
-    private int arrows_enabled = 1;
-    private void enable(){
-        arrows_enabled = 1;
-    }
-    private void disable(){
-        arrows_enabled = 0;
-    }
     private void shootArrow(int room1, int room2){
-        if(arrows_enabled==0) return;
-        if(arrows<=0) return;
-        if(GRID.get(room1)=="wumpus") {
+        if(stateMachine.get_arrows_enabled()==0) return;
+        if(stateMachine.get_arrows() <=0) return;
+        if(GRID.get(room1).equals("wumpus")) {
+            ((TextView) findViewById(R.id.notifications)).setText("Notifications: shot wumpus");
+
             GRID.set(room1, "--");
-            arrows-=1;
-            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+            ImageView img = findViewById(IMGVIEW[room1]);
+            img.setImageResource(R.drawable.wumpus1);
+            stateMachine.arrow_shot();
+            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ stateMachine.get_arrows());
         }
-        if(GRID.get(room2)=="wumpus"){
-            GRID.set(room1, "--");
-            arrows-=1;
-            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+        if(GRID.get(room2).equals("wumpus")){
+            ((TextView) findViewById(R.id.notifications)).setText("Notifications: shot wumpus");
+
+            GRID.set(room2, "--");
+            ImageView img = findViewById(IMGVIEW[room2]);
+            img.setImageResource(R.drawable.wumpus1);
+            stateMachine.arrow_shot();
+            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ stateMachine.get_arrows());
         }
     }
     private void upArrow(){
@@ -324,8 +404,6 @@ public class MainActivity extends AppCompatActivity {
         shootArrow(room1, room2);
         refresh();
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -386,7 +464,7 @@ public class MainActivity extends AppCompatActivity {
         enable.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                enable();
+                stateMachine.enableArrows();
             }
         });
 
@@ -394,7 +472,7 @@ public class MainActivity extends AppCompatActivity {
         disable.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                disable();
+                stateMachine.disableArrows();
             }
         });
 
@@ -464,6 +542,48 @@ public class MainActivity extends AppCompatActivity {
                 img.setImageResource(R.drawable.wumpus5);
             }
         });
+
+
+        /************************************************************************/
+        /*                          Floating Action Button                      */
+        /************************************************************************/
+
+        closeButton = (Button) findViewById(R.id.button);
+        builder = new AlertDialog.Builder(this);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //Uncomment the below code to Set the message and title from the strings.xml file
+                builder.setMessage(R.string.dialog_message) .setTitle(R.string.dialog_title);
+
+                //Setting message manually and performing action on button click
+                builder.setMessage("Do you want to close this application ?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                finish();
+                                Toast.makeText(getApplicationContext(),"you choose yes action for alertbox",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //  Action for 'NO' Button
+                                dialog.cancel();
+                                Toast.makeText(getApplicationContext(),"you choose no action for alertbox",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                //Creating dialog box
+                AlertDialog alert = builder.create();
+                //Setting the title manually
+                alert.setTitle("AlertDialogExample");
+                alert.show();
+            }
+        });
+
+
 
 
 
