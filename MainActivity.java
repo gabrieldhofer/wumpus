@@ -1,6 +1,3 @@
-/*
-
-*/
 package edu.sdsmt.Hofer_Gabriel;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +5,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -24,11 +24,17 @@ public class MainActivity extends AppCompatActivity {
             R.id.imageView12, R.id.imageView13, R.id.imageView14, R.id.imageView15
     };
     private int[] VISITED = new int[16];
+    private int[] ARROW = new int[16];
+    private String player = "wumpus5";
 
     private void init(){
         // initialize visited array to not-visited except for (0,0)
         for(int i=0;i<16;i++) VISITED[i]=0;
         VISITED[0]=1;
+
+        // reset arrows array
+        for(int i=0;i<16;i++) ARROW[i]=0;
+
         place_objects_randomly();
         score=bow_and_quiver=arrows=0;
         ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
@@ -41,7 +47,19 @@ public class MainActivity extends AppCompatActivity {
             img.setImageResource(R.drawable.wumpus1);
         }
         ImageView img = findViewById(IMGVIEW[0]);
-        img.setImageResource(R.drawable.wumpus5);
+
+        switch(player){
+            case "wumpus5":
+                img.setImageResource(R.drawable.wumpus5);
+                break;
+            case "dot":
+                img.setImageResource(R.drawable.dot);
+                break;
+            case "square":
+                img.setImageResource(R.drawable.square);
+                break;
+        }
+        //img.setImageResource(getResources().getIdentifier(player, "drawable", getPackageName()));
 
         // reset statemachine
         stateMachine = new StateMachine();
@@ -121,6 +139,10 @@ public class MainActivity extends AppCompatActivity {
                         img = findViewById(IMGVIEW[i]);
                         img.setImageResource(R.drawable.wumpus);
                         break;
+                    case "bow_and_quiver":
+                        img = findViewById(IMGVIEW[i]);
+                        img.setImageResource(R.drawable.bow_quiver);
+                        break;
                     case "exit":
                         img = findViewById(IMGVIEW[i]);
                         img.setImageResource(R.drawable.exit);
@@ -188,11 +210,28 @@ public class MainActivity extends AppCompatActivity {
         VISITED[0]=1;
         VISITED[actor]=1;
 
+        // pickup bow_andd_quiver or arrow if possible
+        pickup();
+
         // check for obstacles and stuff
         if(check_for_obstacles_and_stuff(actor)) return;
 
         // place actor
+        //int image = getResources().getIdentifier(player, "drawable", getPackageName());
+
         int image = R.drawable.wumpus5;
+        switch(player){
+            case "wumpus5":
+                image = R.drawable.wumpus5;
+                break;
+            case "dot":
+                image = R.drawable.dot;
+                break;
+            case "square":
+                image = R.drawable.square;
+                break;
+        }
+
         ImageView img = findViewById(IMGVIEW[actor]);
         img.setImageResource(image);
     }
@@ -214,19 +253,24 @@ public class MainActivity extends AppCompatActivity {
         refresh();
     }
 
-    private void pickup(){
-        switch(GRID.get(actor)){
+    private void pickup() {
+        switch(GRID.get(actor)) {
             case "arrow1":
-                arrows+=1;
-                ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+                if (bow_and_quiver > 0 && ARROW[actor]!=0 ) // can only pickup arrow if has bow and quiver
+                    arrows += 1;
+                ARROW[actor]=1;
+                ((TextView) findViewById(R.id.arrows)).setText("Arrows: " + arrows);
                 break;
             case "arrow2":
-                arrows+=1;
-                ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+                if (bow_and_quiver > 0 && ARROW[actor]!=0 )  // can only pickup arrow if has bow and quiver
+                    arrows += 1;
+                ARROW[actor]=1;
+                ((TextView) findViewById(R.id.arrows)).setText("Arrows: " + arrows);
                 break;
             case "bow_and_quiver":
-                bow_and_quiver+=1;
-                ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: "+ bow_and_quiver);
+                if(bow_and_quiver<1)
+                    bow_and_quiver += 1;
+                ((TextView) findViewById(R.id.bow_and_quiver)).setText("Bow and Quiver: " + bow_and_quiver);
                 break;
         }
     }
@@ -338,14 +382,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button pickup = findViewById(R.id.pickup);
-        pickup.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                pickup();
-            }
-        });
-
         Button enable = findViewById(R.id.enable);
         enable.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -393,6 +429,43 @@ public class MainActivity extends AppCompatActivity {
                 rightArrow();
             }
         });
+
+        /************************************************************************/
+        /*                          Floating Action Button                      */
+        /************************************************************************/
+        /* https://stackoverflow.com/questions/31111431/android-vertically-expanded-floating-action-button */
+        FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        FloatingActionButton fab3 = (FloatingActionButton) findViewById(R.id.fab3);
+
+        fab1.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                player = "dot";
+                ImageView img = findViewById(IMGVIEW[actor]);
+                img.setImageResource(R.drawable.dot);
+            }
+        });
+
+        fab2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                player = "square";
+                ImageView img = findViewById(IMGVIEW[actor]);
+                img.setImageResource(R.drawable.square);
+            }
+        });
+
+        fab3.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                player = "wumpus5";
+                ImageView img = findViewById(IMGVIEW[actor]);
+                img.setImageResource(R.drawable.wumpus5);
+            }
+        });
+
+
 
     }
 }
