@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -233,24 +231,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void enable(){
 
+    /************************************************************************/
+    /*                          Arrow Functions                             */
+    /************************************************************************/
+    private int arrows_enabled = 1;
+    private void enable(){
+        arrows_enabled = 1;
     }
     private void disable(){
-
+        arrows_enabled = 0;
+    }
+    private void shootArrow(int room1, int room2){
+        if(arrows_enabled==0) return;
+        if(arrows<=0) return;
+        if(GRID.get(room1)=="wumpus") {
+            GRID.set(room1, "--");
+            arrows-=1;
+            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+        }
+        if(GRID.get(room2)=="wumpus"){
+            GRID.set(room1, "--");
+            arrows-=1;
+            ((TextView) findViewById(R.id.arrows)).setText("Arrows: "+ arrows);
+        }
     }
     private void upArrow(){
-
+        int room1 = (actor-4+16)%16;
+        int room2 = (room1-4+16)%16;
+        shootArrow(room1, room2);
+        refresh();
     }
     private void leftArrow(){
-
+        int room1 = (actor-1) + ((actor-1+4)/4 != (actor+4)/4 ? 4 : 0);
+        int room2 = (room1-1) + ((room1-1+4)/4 != (room1+4)/4 ? 4 : 0);
+        shootArrow(room1, room2);
+        refresh();
     }
     private void downArrow(){
-
+        int room1 = (actor+4+16)%16;
+        int room2 = (room1+4+16)%16;
+        shootArrow(room1, room2);
+        refresh();
     }
     private void rightArrow(){
-
+        int room1 = (actor+1) + ((actor+1+4)/4 != (actor+4)/4 ? -4 : 0);
+        int room2 = (room1+1) + ((room1+1+4)/4 != (room1+4)/4 ? -4 : 0);
+        shootArrow(room1, room2);
+        refresh();
     }
+
 
 
     @Override
@@ -333,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /************************************************************************/
-        /*                          Arrow Button Events                         */
+        /*                          Arrow Button & Events                       */
         /************************************************************************/
         Button upArrow = findViewById(R.id.upArrow);
         upArrow.setOnClickListener(new View.OnClickListener(){
@@ -366,4 +396,3 @@ public class MainActivity extends AppCompatActivity {
 
     }
 }
-
