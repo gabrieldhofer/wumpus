@@ -12,20 +12,22 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <Button
             android:id="@+id/cheat"
-            android:layout_width="122dp"
+            android:layout_width="74dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="269dp"
+            android:layout_marginStart="166dp"
             android:text="Cheat" />
 
         <Button
             android:id="@+id/pickup"
-            android:layout_width="122dp"
+            android:layout_width="78dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
@@ -36,51 +38,51 @@
 
         <Button
             android:id="@+id/reset"
-            android:layout_width="118dp"
+            android:layout_width="68dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="140dp"
+            android:layout_marginStart="94dp"
             android:text="Reset" />
 
         <Button
             android:id="@+id/moveUp"
-            android:layout_width="wrap_content"
+            android:layout_width="47dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="158dp"
-            android:layout_marginTop="216dp"
-            android:text="UP" />
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="199dp"
+            android:text="U" />
 
         <Button
             android:id="@+id/moveLeft"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/moveUp"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="59dp"
-            android:layout_marginTop="11dp"
-            android:text="LEFT" />
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="10dp"
+            android:text="L" />
 
         <Button
             android:id="@+id/moveDown"
-            android:layout_width="wrap_content"
+            android:layout_width="51dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/moveUp"
-            android:layout_marginStart="11dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="7dp"
             android:layout_toEndOf="@+id/moveLeft"
-            android:text="DOWN" />
+            android:text="D" />
 
         <Button
             android:id="@+id/moveRight"
-            android:layout_width="wrap_content"
+            android:layout_width="49dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/moveUp"
             android:layout_marginStart="7dp"
             android:layout_marginTop="8dp"
             android:layout_toEndOf="@+id/moveDown"
-            android:text="RIGHT" />
+            android:text="R" />
 
         <ImageView
             android:id="@+id/imageView0"
@@ -244,7 +246,7 @@
 
         <TextView
             android:id="@+id/notifications"
-            android:layout_width="358dp"
+            android:layout_width="208dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
@@ -255,7 +257,7 @@
 
         <TextView
             android:id="@+id/bow_and_quiver"
-            android:layout_width="361dp"
+            android:layout_width="211dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
@@ -266,25 +268,89 @@
 
         <TextView
             android:id="@+id/score"
-            android:layout_width="359dp"
+            android:layout_width="208dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginStart="20dp"
             android:layout_marginTop="59dp"
+            android:layout_marginEnd="183dp"
             android:text="Score: 0"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/arrows"
-            android:layout_width="362dp"
-            android:layout_height="31dp"
+            android:layout_width="209dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="20dp"
             android:layout_marginTop="118dp"
             android:text="Arrows: 0"
             android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/upArrow"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="286dp"
+            android:layout_marginTop="194dp"
+            android:text="UA" />
+
+        <Button
+            android:id="@+id/leftArrow"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/upArrow"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="227dp"
+            android:layout_marginTop="6dp"
+            android:text="LA" />
+
+        <Button
+            android:id="@+id/downArrow"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/upArrow"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="7dp"
+            android:layout_toEndOf="@+id/leftArrow"
+            android:text="DA" />
+
+        <Button
+            android:id="@+id/rightArrow"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/upArrow"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="7dp"
+            android:layout_toEndOf="@+id/downArrow"
+            android:text="RA" />
+
+        <Button
+            android:id="@+id/disable"
+            android:layout_width="68dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@+id/cheat"
+            android:text="Disable"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/enable"
+            android:layout_width="71dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="313dp"
+            android:layout_marginTop="-2dp"
+            android:text="Enable"
+            android:textSize="10sp" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
